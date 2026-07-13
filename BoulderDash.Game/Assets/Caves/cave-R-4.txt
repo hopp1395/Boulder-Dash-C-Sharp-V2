@@ -1,0 +1,51 @@
+# Boulder Dash — Cave R, Level 4
+# Erzeugt aus den BD1-Rohdaten (Boulder-Dash-C64/extracted/caves).
+
+[Cave]
+Cave        = R
+Name        = Intermission 2
+Description = Bonus level
+Kind        = Intermission
+Level       = 4
+Width       = 40
+Height      = 22
+Color1      = #202020
+Color2      = #FFFFFF
+Color3      = #BABABA
+Color4      = #2020BA
+
+[Rules]
+JewelsNeeded    = 16
+CaveTime        = 15
+GameSpeed       = 64
+MagicWallTime   = 20
+AmoebaTime      = 20
+JewelValue      = 10
+JewelValueExtra = 0
+
+[Map]
+# Die Karte ist die maßgebliche Kachelquelle - Änderungen hier wirken direkt im Spiel.
+# Legende: W Steel, w Wall, M MagicWall, . Dirt, ' ' Space, r Boulder, d Jewel,
+#          P Inbox, X Outbox, F Firefly, B Butterfly, a Amoeba
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WrF...............rWWWWWWWWWWWWWWWWWWWWW
+WPrF.............rXWWWWWWWWWWWWWWWWWWWWW
+Wd.rF...........r.dWWWWWWWWWWWWWWWWWWWWW
+Wrd.rF.........r.drWWWWWWWWWWWWWWWWWWWWW
+W.rd.rF.......r.dr.WWWWWWWWWWWWWWWWWWWWW
+W..rd.rF.....r.dr..WWWWWWWWWWWWWWWWWWWWW
+W...rd.rF...r.dr...WWWWWWWWWWWWWWWWWWWWW
+W....rd.rF.r.dr....WWWWWWWWWWWWWWWWWWWWW
+W.....rd.rr.dr.....WWWWWWWWWWWWWWWWWWWWW
+W......rd..dr......WWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
