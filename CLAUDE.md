@@ -38,6 +38,10 @@ Three projects: `BoulderDash.Core` (engine, no MonoGame dependency, fully headle
 
 No MonoGame content pipeline (no MGCB): `Assets/**` is copied to the output directory and parsed at runtime. Renders to a logical-resolution RenderTarget (menus fixed at 320×200 like the original's VGA mode 13h; in-game the viewport size), then integer-scales centered into the window. It only picks a renderer per `SessionPhase` — all game/menu flow is in Core's `GameSession`.
 
+**Shaders** are the one exception to "all assets are text files": HLSL sources live in `Effects/*.fx` (readable, in the repo) and are compiled to binary `.mgfxo` at build time by the `dotnet-mgfxc` tool (`.config/dotnet-tools.json`, target `CompileShaders`); the artifact lands in `obj/` and is copied to the output. Compiler and framework must speak the same MGFX version — that is why `MonoGame.Framework.DesktopGL` is pinned instead of floating; raise both together. Compiling needs the D3D compiler, so it only works on Windows.
+
+`HorrorPostProcessor` is the dark lighting (diamonds as the only light source), switched on together with Cave-Explore (E). It composes the tile scene, a light map and a per-tile visibility mask in the window's **native** resolution, so light, fog, smoke and grain deliberately do *not* align to the 16px tile grid while the sprites stay retro-pixelated. It reads Core state only and draws no randomness.
+
 ## Determinism and golden tests
 
 - The simulation is deterministic: one fixed-seed `System.Random` stream shared by amoeba growth, boulder pushing, etc. **Order and count of random draws are behavior-relevant** — don't add, remove, or reorder draws casually.
