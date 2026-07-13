@@ -5,9 +5,7 @@ internal static class TestPaths
 {
     public static string RepoRoot { get; } = FindRepoRoot();
 
-    public static string GameAssets => Path.Combine(RepoRoot, "csharp", "BoulderDash.Game", "Assets");
-
-    public static string SrcRoot => Path.Combine(RepoRoot, "src");
+    public static string GameAssets => Path.Combine(RepoRoot, "BoulderDash.Game", "Assets");
 
     private static string FindRepoRoot()
     {
