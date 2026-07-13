@@ -1,0 +1,51 @@
+# Boulder Dash — Cave M, Level 2
+# Erzeugt aus den BD1-Rohdaten (Boulder-Dash-C64/extracted/caves).
+
+[Cave]
+Cave        = M
+Name        = Apocalypse
+Description = Bring butterflies and amoeba together
+Kind        = Normal
+Level       = 2
+Width       = 40
+Height      = 22
+Color1      = #202020
+Color2      = #FFFFFF
+Color3      = #BA7120
+Color4      = #2020BA
+
+[Rules]
+JewelsNeeded    = 55
+CaveTime        = 155
+GameSpeed       = 128
+MagicWallTime   = 140
+AmoebaTime      = 140
+JewelValue      = 5
+JewelValueExtra = 8
+
+[Map]
+# Die Karte ist die maßgebliche Kachelquelle - Änderungen hier wirken direkt im Spiel.
+# Legende: W Steel, w Wall, M MagicWall, . Dirt, ' ' Space, r Boulder, d Jewel,
+#          P Inbox, X Outbox, F Firefly, B Butterfly, a Amoeba
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+W...r.....X....r..P.a...r.....r........W
+W.r.rr.........r...r........r......r.r.W
+W.r..r...........r....r............r.rrW
+W.......r..r.......................r..rW
+W..r...r....r..r.r.................r..rW
+W.........r.....r........rrr...........W
+W....r....r.....r........r..r..r....r..W
+W..r....r...................r..r.......W
+W.................rrr............r....rW
+Wr.r......r.........r...r..............W
+W....................r..r........r.....W
+W.rr.........r........r.....r.......r..W
+W.rr.........rr..r........r......r.rr..W
+W..............r....r..r.........r.rr..W
+W.....r...r......................r..r..W
+W....wwwwwwwwwwwwwwwwwwwwwwwwwwwwww....W
+W....BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB...rW
+W..r.rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr....W
+Wr....................................rW
+W......................................W
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
