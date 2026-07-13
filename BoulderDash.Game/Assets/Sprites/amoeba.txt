@@ -1,8 +1,17 @@
 # Boulder Dash — Sprite: Amoeba (4 Frames, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
+#
+# Die Amoebe ist eine zusammenhaengende Masse aus vielen Kacheln — anders als bei den Einzelobjekten
+# darf hier deshalb KEINE Schattenkante an den Kachelrand: Sie wuerde sich ueber die ganze Masse zu
+# einem 16-Pixel-Gitter aufreihen. Plastisch wird sie stattdessen von innen: Jede Blase hat eine
+# Membran (x) und darunter ihren Schatten (+), das Licht kommt von oben links.
+#
+# Die Mottlierung (;) ist in allen vier Frames gleich — die Haut steht still, nur die Blasen wabern.
+# Das ist der Grund, warum die Amoebe lebendig wirkt und nicht flackert.
 
 [Sprite]
 Name   = Amoeba
@@ -11,73 +20,73 @@ Height = 16
 Frames = 4
 
 [Frame 1]
-::::::xx..xx::::
-::::::::xx::::::
-::::::::::::::::
-xx::::::::::::::
-..xx::::::::::xx
-xx::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-xxxx::::::::::xx
-..xx::::::::xx..
-xxxx::::::::::xx
-::::::::::::::::
-::::::::xx::::::
-::::::xx..xx::::
+::::::x..x::::::
+::::::x..x::::;:
+::;:::;++:::::::
+xx:::::::;::::::
+..x:::::::::;:::
+..x::;::::::::::
+++::::::::::::;:
+::::::::;:::::::
+:::;::::::::::::
+::::::::::;::xx:
+:::;::::::::x..x
+:::::;::::::x..x
+:::::::::;:::++:
+::::::xx::::;:::
+:::::x..x::::;::
+:::::x..x:::::::
 
 [Frame 2]
-::::xx......xx::
-::::::xx..xx::::
-::::::::xx::::::
-::::::::::::::xx
-xx::::::::::xx..
-::::::::::::::xx
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-::::::::xx::::::
-::::::xx..xx::::
-::::xx......xx::
+:::x..x:::::::::
+:::x..x:::::::;:
+::;:++;:::::::::
+:::::::::;::::::
+:::::::::::xx:::
+:::::;::::x..x::
+::::::::::x..x;:
+::::::::;::++:::
+:xx;::::::::::::
+x..x::::::;:::::
+x..x::::::::::::
+:++::;::::::::::
+:::::::::;::::::
+:::::::::xx:;:::
+::::::::x..x:;::
+::::::::x..x::::
 
 [Frame 3]
-::::::xx..xx::::
-::::::::xx::::::
-::::::::::::::xx
-xx::::::::::xx..
-..xx::::::xxxx..
-xx::::::::::xx..
-::::::::::::::xx
-::::::::::::::::
-::::::::::::::::
-::::::::::::::::
-xx::::::::::::xx
-..xx::::::::xx..
-xx::::::::::::xx
-::::::::::::::::
-::::::::xx::::::
-::::::xx..xx::::
+::::::::::::xx::
+:::::::::::x..x:
+::;:::;::::x..x:
+:::::::::;::++::
+::::::::::::;:::
+:::xx;::::::::::
+::x..x::::::::;:
+::x..x::;:::::::
+:::++:::::::::::
+::::::::::;:::::
+:::;::::xx::::::
+:::::;:x..x:::::
+:::::::x..x:::::
+::::::::++::;:::
+xx:::::::::::;::
+..x:::::::::::::
 
 [Frame 4]
-::::::::xx::::::
-::::::::::::::::
-xx::::::::::::::
-..xx::::::::::xx
-..xx::::::::::xx
-..xx::::::::::xx
-xx::::::::::::::
-::::::::::::::::
-::::::::::::::::
-xx::::::::::::xx
-..xx::::::::xx..
-..xx::::::::xx..
-..xx::::::::xx..
-x::::::::::::xx:
-::::::::::::::::
+:::::::::x..x:::
+::::::xx:x..x:;:
+::;::x..x:++::::
+:::::x..x;::::::
+::::::++::::;:::
+:::::;::::::::::
+::::::::::::::xx
+::::::::;::::x..
+:::;:::::::::x..
+::::::::::;:::++
+:::;::::::::::::
+::xx:;::::::::::
+:x..x::::;::::::
+:x..x:::::::;:::
+::++:::::::::;::
 ::::::::::::::::

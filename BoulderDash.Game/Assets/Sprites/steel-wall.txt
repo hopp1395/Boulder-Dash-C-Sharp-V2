@@ -1,9 +1,18 @@
 # Boulder Dash — Sprite: Steel wall (1 Frame, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Im Code: Element.TitaniumWall; auch Tarnung des Ausgangs vor der Freischaltung.
+#
+# Genietete Stahlplatten, von links oben beleuchtet: heller Ruecken (:), Koerper (x), Schattenkante
+# (+) rechts und unten, dunkle Fuge (,) zwischen den Plattenlagen. Die Nieten sind kleine Kuppeln
+# (: oben links, + unten rechts).
+#
+# Das Muster hat eine vertikale Periode von 8 Zeilen — dieselbe wie border-fill, das dieselben
+# Platten als Gleitfenster scrollt (siehe dort). Die Periode muss 8 bleiben, sonst reisst das
+# Scrollen der Zudeck-Wand auseinander.
 
 [Sprite]
 Name   = Steel wall
@@ -12,19 +21,19 @@ Height = 16
 Frames = 1
 
 [Frame 1]
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx....xxxx....xx
-xxxx..xxxxxx..xx
-xx::..xxxx::..xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx....xxxx....xx
-xxxx..xxxxxx..xx
-xx::..xxxx::..xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
+;::::::::::::::;
+:xxxxxxxxxxxxxx+
+:xx:+xxxxxx:+xx+
+:xx+,xxxxxx+,xx+
+:xxxxxxxxxxxxxx+
+:xxxxxxxxxxxxxx+
+;++++++++++++++,
+,,,,,,,,,,,,,,,,
+;::::::::::::::;
+:xxxxxxxxxxxxxx+
+:xx:+xxxxxx:+xx+
+:xx+,xxxxxx+,xx+
+:xxxxxxxxxxxxxx+
+:xxxxxxxxxxxxxx+
+;++++++++++++++,
+,,,,,,,,,,,,,,,,

@@ -12,15 +12,21 @@ public sealed class SpriteData
     public required int Width { get; init; }
     public required int Height { get; init; }
 
-    /// <summary>Ein byte[] je Frame, zeilenweise, Länge = Width*Height, ein Byte = Palettenindex 0-3.</summary>
+    /// <summary>Ein byte[] je Frame, zeilenweise, Länge = Width*Height, ein Byte = Palettenindex 0-7.</summary>
     public required IReadOnlyList<byte[]> Frames { get; init; }
 }
 
 /// <summary>
 /// Parser für das menschenlesbare Sprite-Textformat: eine Datei pro Objekt (benannt nach den
 /// BDCFF-Objektnamen), darin ein [Sprite]-Kopf mit `Key = Value`-Paaren und je Animationsframe
-/// ein [Frame N]-Abschnitt mit einem Zeichen pro Pixel: `.` `:` `x` `#` = Palettenindex 0-3
-/// (dieselbe Konvention wie die C64-Extraktionen in Boulder-Dash-C64/extracted/sprites).
+/// ein [Frame N]-Abschnitt mit einem Zeichen pro Pixel.
+///
+/// Die Glyphen sind zwei Vierergruppen (siehe Palette.Expand): `.` `:` `x` `#` sind die vier
+/// Farben der Cave (Palettenindex 0-3, dieselbe Konvention wie die C64-Extraktionen in
+/// Boulder-Dash-C64/extracted/sprites), `,` `;` `+` `%` deren Schattentöne (Index 4-7). Das Glyph
+/// des Schattens ist das der Grundfarbe mit Unterlänge bzw. mehr Strichen: `.`→`,` `:`→`;`
+/// `x`→`+` `#`→`%`.
+///
 /// '#'-Kommentarzeilen und Leerzeilen werden nur AUSSERHALB der [Frame]-Abschnitte ignoriert —
 /// innerhalb eines Frames ist jede nicht-leere Zeile eine Pixelzeile, weil '#' zugleich das
 /// Glyph für Farbe 3 ist und eine Pixelzeile damit beginnen darf.
@@ -28,9 +34,9 @@ public sealed class SpriteData
 public static class SpriteTextFile
 {
     /// <summary>Glyph je Pixelwert; die Position im String ist der Palettenindex.</summary>
-    private const string Glyphs = ".:x#";
+    private const string Glyphs = ".:x#,;+%";
 
-    /// <summary>Glyph für einen Pixelwert 0-3 (für Werkzeuge, die das Format schreiben).</summary>
+    /// <summary>Glyph für einen Pixelwert 0-7 (für Werkzeuge, die das Format schreiben).</summary>
     public static char ToChar(byte pixel) => Glyphs[pixel];
 
     public static SpriteData Parse(string text, string sourceName)

@@ -1,9 +1,19 @@
 # Boulder Dash — Sprite: Dirt (1 Frame, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Im Code: Element.Earth.
+#
+# Erdreich als Körnung: der Schattenton der Cave-Farbe 3 (%) traegt die Flaeche, die Farbe selbst
+# (#) sind die hellen Kruemel, x und + einzelne Kiesel, . und , die Loecher dazwischen.
+#
+# Die Körnung ist KEIN Zufall, sondern gleichmaessig gestreut (Blue Noise, mit Best-Candidate-
+# Sampling erzeugt). Echter Zufall bildet Klumpen — und da diese eine Kachel ueber das ganze
+# Spielfeld wiederholt wird, wuerde jeder Klumpen als wiederkehrende Form sichtbar (man sieht dann
+# Kreise und Streifen im Erdreich). Gemessen wird toroidal, also ueber den Kachelrand hinweg,
+# damit auch an den Nahtstellen keine Haeufungen entstehen.
 
 [Sprite]
 Name   = Dirt
@@ -12,19 +22,19 @@ Height = 16
 Frames = 1
 
 [Frame 1]
-....##....##..##
-####....##....##
-..##xx##..##xx..
-####..######..##
-##..######..####
-..xx##..##xx##..
-xx####xxxx..####
-##..########xx..
-..######xx######
-##xx..######xx..
-##xx##..xx##..##
-..xx####..##xx##
-##..##..##..##..
-####....####..##
-##..##xx..##....
-..##....##..##..
+%%#%#%+%x%%+x,#%
+.#+%+%%%#.#%%#%#
++%x#,%#%%#%%#+#%
+#%%+#.%+%%%%.x%+
+%#%%%#%%%#%%+#%%
+,+%#%%x#%,x#%%+#
+%#x.%+#%%%+%%%.%
+%%#+#%%+#%#%%+#+
+#%%%%#%%.%x+#%%x
++%#.%+%#%#%%,%%%
+#%x%#%%+x%#%%#+.
+%#,%%%#%,#%#+%%#
+%%+%#+%#%%%%x#%+
+#.%%x#.%%+#%%.#%
+x#%#+%%%#%.#+#+%
+#%+%%%#%+%%%#%%+

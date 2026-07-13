@@ -1,9 +1,15 @@
 # Boulder Dash — Sprite: Border fill (1 Frame, 16x24)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Im Code: Element.BorderFill; 16 Zeilen hohes Gleitfenster im 24 Zeilen hohen Sprite.
+#
+# Dieselben genieteten Stahlplatten wie steel-wall, nur dreimal statt zweimal gestapelt: Das
+# Gleitfenster (Zeilenversatz 0-7) muss in jeder Stellung ein nahtloses Bild ergeben, deshalb hat
+# das Muster eine vertikale Periode von genau 8 Zeilen — dann ist jeder 16-Zeilen-Ausschnitt exakt
+# zwei volle Lagen. Wer hier Zeilen einfuegt oder die Periode aendert, zerreisst die Scroll-Animation.
 
 [Sprite]
 Name   = Border fill
@@ -12,27 +18,27 @@ Height = 24
 Frames = 1
 
 [Frame 1]
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx....xxxx....xx
-xxxx..xxxxxx..xx
-xx::..xxxx::..xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx....xxxx....xx
-xxxx..xxxxxx..xx
-xx::..xxxx::..xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx....xxxx....xx
-xxxx..xxxxxx..xx
-xx::..xxxx::..xx
-xxxxxxxxxxxxxxxx
+;::::::::::::::;
+:xxxxxxxxxxxxxx+
+:xx:+xxxxxx:+xx+
+:xx+,xxxxxx+,xx+
+:xxxxxxxxxxxxxx+
+:xxxxxxxxxxxxxx+
+;++++++++++++++,
+,,,,,,,,,,,,,,,,
+;::::::::::::::;
+:xxxxxxxxxxxxxx+
+:xx:+xxxxxx:+xx+
+:xx+,xxxxxx+,xx+
+:xxxxxxxxxxxxxx+
+:xxxxxxxxxxxxxx+
+;++++++++++++++,
+,,,,,,,,,,,,,,,,
+;::::::::::::::;
+:xxxxxxxxxxxxxx+
+:xx:+xxxxxx:+xx+
+:xx+,xxxxxx+,xx+
+:xxxxxxxxxxxxxx+
+:xxxxxxxxxxxxxx+
+;++++++++++++++,
+,,,,,,,,,,,,,,,,

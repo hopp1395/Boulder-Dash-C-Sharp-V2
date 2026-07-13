@@ -1,8 +1,12 @@
 # Boulder Dash — Sprite: Firefly (4 Frames, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
+# Beleuchtet von links: die rechte Kante jeder Form traegt den Schattenton ihrer Farbe. Die vier
+# Frames sind ineinanderliegende Ringe, die nach aussen wandern — mit den Schattenkanten wirken
+# sie plastisch statt flach.
 
 [Sprite]
 Name   = Firefly
@@ -11,73 +15,73 @@ Height = 16
 Frames = 4
 
 [Frame 1]
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx............xx
-xx............xx
-xx..xxxxxxxx..xx
-xx..xxxxxxxx..xx
-xx..xx::::xx..xx
-xx..xx::::xx..xx
-xx..xx::::xx..xx
-xx..xx::::xx..xx
-xx..xxxxxxxx..xx
-xx..xxxxxxxx..xx
-xx............xx
-xx............xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxx+
+xxxxxxxxxxxxxxx+
+x+............x+
+x+............x+
+x+..xxxxxxx+..x+
+x+..xxxxxxx+..x+
+x+..x+:::;x+..x+
+x+..x+:::;x+..x+
+x+..x+:::;x+..x+
+x+..x+:::;x+..x+
+x+..xxxxxxx+..x+
+x+..xxxxxxx+..x+
+x+............x+
+x+............x+
+xxxxxxxxxxxxxxx+
+xxxxxxxxxxxxxxx+
 
 [Frame 2]
 ................
 ................
-..xxxxxxxxxxxx..
-..xxxxxxxxxxxx..
-..xx::::::::xx..
-..xx::::::::xx..
-..xx::xxxx::xx..
-..xx::xxxx::xx..
-..xx::xxxx::xx..
-..xx::xxxx::xx..
-..xx::::::::xx..
-..xx::::::::xx..
-..xxxxxxxxxxxx..
-..xxxxxxxxxxxx..
+..xxxxxxxxxxx+..
+..xxxxxxxxxxx+..
+..x+:::::::;x+..
+..x+:::::::;x+..
+..x+:;xxx+:;x+..
+..x+:;xxx+:;x+..
+..x+:;xxx+:;x+..
+..x+:;xxx+:;x+..
+..x+:::::::;x+..
+..x+:::::::;x+..
+..xxxxxxxxxxx+..
+..xxxxxxxxxxx+..
 ................
 ................
 
 [Frame 3]
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
-xx::::::::::::xx
-xx::::::::::::xx
-xx::xxxxxxxx::xx
-xx::xxxxxxxx::xx
-xx::xx....xx::xx
-xx::xx....xx::xx
-xx::xx....xx::xx
-xx::xx....xx::xx
-xx::xxxxxxxx::xx
-xx::xxxxxxxx::xx
-xx::::::::::::xx
-xx::::::::::::xx
-xxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxx+
+xxxxxxxxxxxxxxx+
+x+:::::::::::;x+
+x+:::::::::::;x+
+x+:;xxxxxxx+:;x+
+x+:;xxxxxxx+:;x+
+x+:;x+....x+:;x+
+x+:;x+....x+:;x+
+x+:;x+....x+:;x+
+x+:;x+....x+:;x+
+x+:;xxxxxxx+:;x+
+x+:;xxxxxxx+:;x+
+x+:::::::::::;x+
+x+:::::::::::;x+
+xxxxxxxxxxxxxxx+
+xxxxxxxxxxxxxxx+
 
 [Frame 4]
-::::::::::::::::
-::::::::::::::::
-::xxxxxxxxxxxx::
-::xxxxxxxxxxxx::
-::xx........xx::
-::xx........xx::
-::xx..xxxx..xx::
-::xx..xxxx..xx::
-::xx..xxxx..xx::
-::xx..xxxx..xx::
-::xx........xx::
-::xx........xx::
-::xxxxxxxxxxxx::
-::xxxxxxxxxxxx::
-::::::::::::::::
-::::::::::::::::
+:::::::::::::::;
+:::::::::::::::;
+:;xxxxxxxxxxx+:;
+:;xxxxxxxxxxx+:;
+:;x+........x+:;
+:;x+........x+:;
+:;x+..xxx+..x+:;
+:;x+..xxx+..x+:;
+:;x+..xxx+..x+:;
+:;x+..xxx+..x+:;
+:;x+........x+:;
+:;x+........x+:;
+:;xxxxxxxxxxx+:;
+:;xxxxxxxxxxx+:;
+:::::::::::::::;
+:::::::::::::::;

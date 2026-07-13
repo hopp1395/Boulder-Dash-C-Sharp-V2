@@ -8,10 +8,11 @@ namespace BoulderDash.Game.Graphics;
 
 /// <summary>
 /// Hält die 49 Rohsprites aus den Sprite-Textdateien als Texture2D. Die Pixelbytes sind
-/// Palettenindizes (0-3); da jede Cave nur 4 aktive Farben nutzt (setnewpalette,
-/// src/BOULDER.CPP:496-512), werden die Texturen bei jedem Palettenwechsel per SetData neu
-/// eingefärbt statt pro Cave neue Texturen anzulegen — das entspricht dem Original, wo derselbe
-/// Sprite-Speicher einfach unter wechselnden VGA-DAC-Registern angezeigt wird.
+/// Palettenindizes (0-7: die 4 Cave-Farben und ihre Schattentöne, siehe Palette.Expand); da jede
+/// Cave nur diese Farben nutzt (setnewpalette, src/BOULDER.CPP:496-512), werden die Texturen bei
+/// jedem Palettenwechsel per SetData neu eingefärbt statt pro Cave neue Texturen anzulegen — das
+/// entspricht dem Original, wo derselbe Sprite-Speicher einfach unter wechselnden VGA-DAC-Registern
+/// angezeigt wird.
 ///
 /// Jeden Sprite gibt es zweimal: einmal in den Cave-Farben und einmal im Nebelgrau des
 /// Cave-Explore-Features (Palette.Fog, siehe ExploreMap). Das ist derselbe Trick, nur ein zweites
@@ -46,10 +47,12 @@ public sealed class SpriteAtlas
     }
 
     /// <summary>Färbt alle Sprites mit der aktuellen 4-Farben-Cave-Palette neu ein — und gleich
-    /// daneben ihre Nebel-Ausgabe mit derselben Palette in Grau (Palette.Fog).</summary>
-    public void ApplyPalette(Rgb[] palette)
+    /// daneben ihre Nebel-Ausgabe mit derselben Palette in Grau (Palette.Fog). Gezeichnet wird mit
+    /// den 8 Farben aus Palette.Expand: den vier Cave-Farben und ihren Schattentönen.</summary>
+    public void ApplyPalette(Rgb[] caveColors)
     {
-        // Die vier Farben einmal vorab umrechnen statt für jeden der ~12.500 Pixel erneut.
+        // Die acht Farben einmal vorab umrechnen statt für jeden der ~12.500 Pixel erneut.
+        var palette = Palette.Expand(caveColors);
         var fogPalette = new Rgb[palette.Length];
         for (var c = 0; c < palette.Length; c++)
         {

@@ -1,9 +1,13 @@
 # Boulder Dash — Sprite: Brick wall (1 Frame, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Im Code: Element.Wall.
+# Jeder Stein ist von oben links beleuchtet: heller Ruecken (:), Koerper (x) mit hellem Rand (;)
+# links und Schattenrand (+) rechts, dunkle Standflaeche. Die Fugen (,) liegen unter dem
+# Cave-Hintergrund und wirken dadurch vertieft statt aufgesetzt.
 
 [Sprite]
 Name   = Brick wall
@@ -12,19 +16,19 @@ Height = 16
 Frames = 1
 
 [Frame 1]
-..::::::..::::::
-..xx::::..xx::::
-..xxxxxx..xxxxxx
-................
-::::..::::::..::
-::::..xx::::..xx
-xxxx..xxxxxx..xx
-................
-..::::::..::::::
-..xx::::..xx::::
-..xxxxxx..xxxxxx
-................
-::::..::::::..::
-::::..xx::::..xx
-xxxx..xxxxxx..xx
-................
+,,::::::,,::::::
+,,;xxxx+,,;xxxx+
+,,++++++,,++++++
+,,,,,,,,,,,,,,,,
+::::,,::::::,,::
+xxx+,,;xxxx+,,;x
+++++,,++++++,,++
+,,,,,,,,,,,,,,,,
+,,::::::,,::::::
+,,;xxxx+,,;xxxx+
+,,++++++,,++++++
+,,,,,,,,,,,,,,,,
+::::,,::::::,,::
+xxx+,,;xxxx+,,;x
+++++,,++++++,,++
+,,,,,,,,,,,,,,,,

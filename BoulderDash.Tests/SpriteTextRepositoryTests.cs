@@ -1,4 +1,5 @@
 using BoulderDash.Core.Data;
+using BoulderDash.Core.Simulation;
 
 namespace BoulderDash.Tests;
 
@@ -24,12 +25,13 @@ public class SpriteTextRepositoryTests
         }
     }
 
+    /// <summary>Die 4 Cave-Farben und ihre 4 Schattentöne (siehe Palette.Expand).</summary>
     [Fact]
-    public void Alle_Pixelwerte_sind_gueltige_Palettenindizes_0_bis_3()
+    public void Alle_Pixelwerte_sind_gueltige_Palettenindizes_0_bis_7()
     {
         foreach (var sprite in RawSprites())
         {
-            Assert.All(sprite, pixel => Assert.InRange(pixel, (byte)0, (byte)3));
+            Assert.All(sprite, pixel => Assert.InRange(pixel, (byte)0, (byte)(Palette.Size - 1)));
         }
     }
 }

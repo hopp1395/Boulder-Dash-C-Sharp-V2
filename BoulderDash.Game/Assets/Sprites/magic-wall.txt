@@ -1,9 +1,13 @@
 # Boulder Dash — Sprite: Magic wall (4 Frames, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Im Code: Element.EnchantedWall.
+# Beleuchtet von links: die rechte Kante jeder Form traegt den Schattenton ihrer Farbe. Die vier
+# Frames verschieben das Mauerwerk gegeneinander — die Schattenkanten wandern mit und lassen die
+# Mauer fliessen statt nur flackern.
 
 [Sprite]
 Name   = Magic wall
@@ -12,73 +16,73 @@ Height = 16
 Frames = 4
 
 [Frame 1]
-..::::::..::::::
-..::::::..::::::
-..::xxxx..::xxxx
-..::......::....
-::::::::::::::::
-::::::xx::::::xx
-xxxx::xxxxxx::xx
-....::......::..
-..::::::..::::::
-..::::::..::::::
-..::xxxx..::xxxx
-..::......::....
-::::::::::::::::
-::::::xx::::::xx
-xxxx::xxxxxx::xx
-....::......::..
+..:::::;..:::::;
+..:::::;..:::::;
+..:;xxx+..:;xxx+
+..:;......:;....
+:::::::::::::::;
+:::::;x+:::::;x+
+xxx+:;xxxxx+:;x+
+....:;......:;..
+..:::::;..:::::;
+..:::::;..:::::;
+..:;xxx+..:;xxx+
+..:;......:;....
+:::::::::::::::;
+:::::;x+:::::;x+
+xxx+:;xxxxx+:;x+
+....:;......:;..
 
 [Frame 2]
-..::::::..::::::
-..xx::::..xx::::
-..xx::xx..xx::xx
-....::......::..
-::::..::::::..::
-::::..xx::::..xx
-xx::..xxxx::..xx
-..::......::....
-..::::::..::::::
-..xx::::..xx::::
-..xx::xx..xx::xx
-....::......::..
-::::..::::::..::
-::::..xx::::..xx
-xx::..xxxx::..xx
-..::......::....
+..:::::;..:::::;
+..x+:::;..x+:::;
+..x+:;x+..x+:;x+
+....:;......:;..
+:::;..:::::;..:;
+:::;..x+:::;..x+
+x+:;..xxx+:;..x+
+..:;......:;....
+..:::::;..:::::;
+..x+:::;..x+:::;
+..x+:;x+..x+:;x+
+....:;......:;..
+:::;..:::::;..:;
+:::;..x+:::;..x+
+x+:;..xxx+:;..x+
+..:;......:;....
 
 [Frame 3]
-..::::::..::::::
-..xx::::..xx::::
-..xxxx::..xxxx::
-......::......::
-::::..::::::..::
-::::..xx::::..xx
-::xx..xx::xx..xx
-::......::......
-..::::::..::::::
-..xx::::..xx::::
-..xxxx::..xxxx::
-......::......::
-::::..::::::..::
-::::..xx::::..xx
-::xx..xx::xx..xx
-::......::......
+..:::::;..:::::;
+..x+:::;..x+:::;
+..xxx+:;..xxx+:;
+......:;......:;
+:::;..:::::;..:;
+:::;..x+:::;..x+
+:;x+..x+:;x+..x+
+:;......:;......
+..:::::;..:::::;
+..x+:::;..x+:::;
+..xxx+:;..xxx+:;
+......:;......:;
+:::;..:::::;..:;
+:::;..x+:::;..x+
+:;x+..x+:;x+..x+
+:;......:;......
 
 [Frame 4]
-::::::::::::::::
-::xx::::::xx::::
-::xxxxxx::xxxxxx
-::......::......
-::::..::::::..::
-::::..::::::..::
-xxxx..::xxxx..::
-......::......::
-::::::::::::::::
-::xx::::::xx::::
-::xxxxxx::xxxxxx
-::......::......
-::::..::::::..::
-::::..::::::..::
-xxxx..::xxxx..::
-......::......::
+:::::::::::::::;
+:;x+:::::;x+:::;
+:;xxxxx+:;xxxxx+
+:;......:;......
+:::;..:::::;..:;
+:::;..:::::;..:;
+xxx+..:;xxx+..:;
+......:;......:;
+:::::::::::::::;
+:;x+:::::;x+:::;
+:;xxxxx+:;xxxxx+
+:;......:;......
+:::;..:::::;..:;
+:::;..:::::;..:;
+xxx+..:;xxx+..:;
+......:;......:;

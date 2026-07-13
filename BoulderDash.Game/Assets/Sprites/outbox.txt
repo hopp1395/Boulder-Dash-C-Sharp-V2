@@ -1,9 +1,12 @@
 # Boulder Dash — Sprite: Outbox (1 Frame, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
 # Blinkframe der Ein-/Ausgangstür (Entrance/EscapeDoor), wechselt mit steel-wall.
+# Ein Stahlrahmen aus demselben Material wie die Wand, aber mit offener, schwarzer Tuer: Im
+# Wechsel mit steel-wall wirkt es, als ginge die Tuer auf und zu.
 
 [Sprite]
 Name   = Outbox
@@ -12,19 +15,19 @@ Height = 16
 Frames = 1
 
 [Frame 1]
-xxxxxxxxxxxxxxxx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xx............xx
-xxxxxxxxxxxxxxxx
+::::::::::::::::
+:;xxxxxxxxxxxx;+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:x,..........,x+
+:;xxxxxxxxxxxx;+
+++++++++++++++++

@@ -1,9 +1,10 @@
 # Boulder Dash — Sprite: Space (1 Frame, 16x16)
-# Ein Zeichen pro Pixel, Werte sind Indizes in die 4-Farben-Cave-Palette:
+# Ein Zeichen pro Pixel, Werte sind Indizes in die 8-Farben-Palette (siehe Palette.Expand):
 # . = Farbe 0 (Hintergrund), : = Farbe 1, x = Farbe 2, # = Farbe 3
+# , = Schatten von 0,   ; = Schatten von 1, + = Schatten von 2, % = Schatten von 3
 # Innerhalb der [Frame]-Abschnitte sind keine Kommentarzeilen möglich,
 # da Pixelzeilen mit '#' beginnen dürfen.
-# Im Code: Element.Empty.
+# Im Code: Element.Empty. Bleibt bewusst leer: der blanke Cave-Hintergrund, ohne Schattierung.
 
 [Sprite]
 Name   = Space
