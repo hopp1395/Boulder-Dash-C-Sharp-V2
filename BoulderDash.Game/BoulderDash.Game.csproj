@@ -50,8 +50,12 @@
        kopiert. Der Übersetzungsschritt braucht den D3D-Compiler und läuft deshalb nur unter Windows
        (anderswo bräuchte mgfxc Wine, siehe MGFXC_WINE_PATH). -->
   <PropertyGroup>
-    <!-- Absolut, weil mgfxc aus dem Projektverzeichnis heraus läuft: IntermediateOutputPath ist relativ. -->
-    <ShaderOutputDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Effects'))</ShaderOutputDir>
+    <!-- Absolut, weil mgfxc aus dem Projektverzeichnis heraus läuft (relative Pfade bezöge es auf sein
+         eigenes Arbeitsverzeichnis). BaseIntermediateOutputPath (obj\) und NICHT IntermediateOutputPath
+         (obj\Debug\net10.0\): Letzteres setzt das SDK erst in seinen Targets am Dateiende, hier wäre es
+         noch leer — und das kompilierte .mgfxo landete neben seiner Quelle im Quellbaum. Die
+         Konfiguration ist ihm ohnehin gleich, ein Shader wird nicht im Debug anders übersetzt. -->
+    <ShaderOutputDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(BaseIntermediateOutputPath)Effects'))</ShaderOutputDir>
   </PropertyGroup>
   <Target Name="CompileShaders" BeforeTargets="AssignTargetPaths"
           Inputs="@(ShaderSource)"

@@ -32,7 +32,14 @@ float2 PlayfieldOrigin;
 float2 PlayfieldSize;
 
 float SmokeStrength;
+
+/// Die Filmkörnung des Erinnerten (siehe FilmGrain): wie groß ein Korn in Bildschirmpixeln ist, wie
+/// stark es die Helligkeit moduliert (die Dichte der Emulsion), wie viel es dem Schwarz obendrein
+/// hinzufügt, und wie unruhig das Filmbild belichtet wird.
+float GrainSize;
+float GrainDensity;
 float GrainStrength;
+float GrainFlicker;
 
 /// Nebeloptik wie Palette.Fog (Core): entsättigen, dann auf einen dunklen, flauen Bereich stauchen.
 /// Dort geschieht das je Farbe der 4er-Palette, hier stufenlos je Pixel — dasselbe Bild, weiche Kante.
@@ -118,6 +125,27 @@ float Luminance(float3 c)
     return dot(c, float3(0.299, 0.587, 0.114));
 }
 
+/// Silberkorn, wie es analoger Film hat: mehrere Lagen unterschiedlich feiner Körner übereinander,
+/// nicht ein Rauschwert je Bildschirmpixel. Ein Korn ist ein paar Pixel groß und weich — es klumpt,
+/// statt zu flimmern.
+///
+/// Ausgewürfelt wird je FILMBILD, nicht je Bildschirmbild: Der Übergabewert ist die auf 24 Bilder je
+/// Sekunde gerundete Zeit. Daher das ruhige "Kochen" des Korns statt eines nervösen Digitalrauschens
+/// im Monitortakt — das Korn gehört dem Film, nicht dem Bildschirm.
+float FilmGrain(float2 screen, float frame)
+{
+    float2 p = screen / max(GrainSize, 0.5);
+    float2 drift = float2(frame * 17.13, frame * 31.71);
+
+    // Die grobe Lage trägt das Bild; die feineren geben ihr nur Struktur. Zu viel Gewicht auf ihnen,
+    // und aus dem Korn wird wieder Digitalrauschen.
+    float g = ValueNoise(p + drift);
+    g += 0.40 * ValueNoise((p * 2.17) - drift.yx);
+    g += 0.12 * ValueNoise((p * 4.31) + drift.yx);
+
+    return (g / 1.52) - 0.5;
+}
+
 float4 MainPS(float4 tint : COLOR0, float2 uv : TEXCOORD0) : COLOR0
 {
     float3 scene = tex2D(SceneSampler, uv).rgb;
@@ -144,8 +172,12 @@ float4 MainPS(float4 tint : COLOR0, float2 uv : TEXCOORD0) : COLOR0
     // Genau das macht die Diamanten zur Lichtquelle und nicht bloß zu hellen Flecken.
     float lightness = (max(max(scene.r, scene.g), scene.b) + min(min(scene.r, scene.g), scene.b)) * 0.5;
     float3 grey = saturate(FogFloor + (lightness * FogContrast)).xxx;
-    float3 base = lerp(scene, grey, fog * (1.0 - glow)) * (1.0 - hidden);
 
+    // Wie viel Erinnerung an dieser Stelle übrig ist, nachdem das Licht seinen Teil zurückgeholt hat.
+    // Der Schleier trägt auch die Körnung: Wo ein Diamant hinleuchtet, tritt sie mit ihm zurück.
+    float veil = fog * (1.0 - glow);
+
+    float3 base = lerp(scene, grey, veil) * (1.0 - hidden);
     float3 lit = base * light;
 
     // Rauch: zwei gegeneinander treibende Rauschfelder, sichtbar nur dort, wo wenig Licht ist.
@@ -155,9 +187,24 @@ float4 MainPS(float4 tint : COLOR0, float2 uv : TEXCOORD0) : COLOR0
                 * Fbm((screen / 160.0) - float2(Time * 0.02, Time * 0.035));
     lit += smoke * SmokeStrength * darkness * (1.0 - hidden) * float3(0.55, 0.62, 0.75);
 
-    // Korn auf dem Nebel: ein Rauschen, das jede Kachel des Gedächtnisses leise flimmern lässt.
-    float grain = (Hash(floor(screen) + floor(Time * 24.0)) - 0.5) * GrainStrength;
-    lit += grain * fog;
+    // Das Erinnerte liegt da wie ein alter, unterbelichteter Film: entsättigt, körnig, unruhig.
+    float frame = floor(Time * 24.0);
+    float grain = FilmGrain(screen, frame);
+
+    // Das Korn sitzt im Mittelton — im tiefen Schwarz und im hellen Licht tritt es zurück, wie die
+    // Dichtekurve einer Emulsion. Es MODULIERT die Helligkeit, statt bloß Rauschen aufzuaddieren:
+    // Genau das unterscheidet Filmkorn von Digitalrauschen.
+    float lum = Luminance(lit);
+    float response = saturate(lum * 8.0) * (1.0 - (0.5 * lum));
+    lit *= 1.0 + (grain * GrainDensity * response * veil);
+
+    // Eine Spur obendrauf, damit das Korn auch dort noch lebt, wo kaum Licht ankommt — sonst läge das
+    // Erinnerte im Dunkeln glatt und tot da.
+    lit += grain * GrainStrength * veil;
+
+    // Torflimmern: Jedes Filmbild wird ein Quäntchen anders belichtet. Das nimmt dem Nebel das
+    // Digitale endgültig — er atmet.
+    lit *= 1.0 + ((Hash(float2(frame, 17.0)) - 0.5) * GrainFlicker * veil);
 
     return float4(lerp(scene, saturate(lit), inside), 1.0) * tint;
 }

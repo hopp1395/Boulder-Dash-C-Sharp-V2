@@ -2,3 +2,7 @@ bin/
 obj/
 /.vs
 /BoulderDash.Game/.vscode
+
+# Übersetzte Shader (siehe Target CompileShaders): Sie entstehen beim Bauen aus Effects/*.fx und
+# gehören nach obj/ — im Quellbaum hat das Binärformat nichts zu suchen.
+*.mgfxo

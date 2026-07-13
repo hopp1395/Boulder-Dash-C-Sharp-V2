@@ -96,7 +96,15 @@ public sealed class HorrorPostProcessor : IDisposable
         _effect.Parameters["FogFloor"].SetValue((float)(Palette.FogFloor / 255.0));
         _effect.Parameters["FogContrast"].SetValue((float)Palette.FogContrast);
         _effect.Parameters["SmokeStrength"].SetValue(0.10f);
-        _effect.Parameters["GrainStrength"].SetValue(0.09f);
+
+        // Die Filmkörnung des Erinnerten (siehe FilmGrain im Shader). Ein Korn ist gut zwei
+        // BILDSCHIRMpixel groß — es hängt am Monitor, nicht am Kachelraster, und wird beim Zoomen
+        // deshalb nicht mitvergrößert. Die Dichte moduliert die Helligkeit, der Sockel hält das Korn
+        // auch im Dunkeln am Leben, das Flimmern belichtet jedes Filmbild ein wenig anders.
+        _effect.Parameters["GrainSize"].SetValue(2.2f);
+        _effect.Parameters["GrainDensity"].SetValue(1.1f);
+        _effect.Parameters["GrainStrength"].SetValue(0.04f);
+        _effect.Parameters["GrainFlicker"].SetValue(0.10f);
 
         // Woran der Shader erkennt, was echtes Licht ist und was bloß die Grundhelligkeit.
         var ambient = ((Ambient.R * 0.299f) + (Ambient.G * 0.587f) + (Ambient.B * 0.114f)) / 255f;
