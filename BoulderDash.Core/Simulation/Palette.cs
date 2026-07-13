@@ -48,9 +48,13 @@ public static class Palette
 
     /// <summary>Die beiden Geschmacks-Regler von <see cref="Fog"/>: Der Sockel hebt den Nebel als
     /// Ganzes vom Schwarz des Unerkundeten ab, die Dämpfung hält ihn hinter dem farbigen
-    /// Blickradius zurück.</summary>
-    private const double FogFloor = 22;
-    private const double FogContrast = 0.5;
+    /// Blickradius zurück.
+    ///
+    /// Öffentlich, weil der Nebel-Shader der Horror-Beleuchtung (HorrorPostProcessor) dieselbe
+    /// Rechnung noch einmal führt — dort je Pixel statt je Palettenfarbe. Zwei Regler an zwei
+    /// Stellen wären zwei Optiken.</summary>
+    public const double FogFloor = 22;
+    public const double FogContrast = 0.5;
 
     /// <summary>
     /// Wie eine Cave-Farbe im Nebel aussieht (Cave-Explore, siehe ExploreMap): entsättigt und

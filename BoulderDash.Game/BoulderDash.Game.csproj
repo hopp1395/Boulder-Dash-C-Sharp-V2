@@ -29,13 +29,47 @@
          Alle Assets sind menschenlesbare Textdateien: Caves in Assets/Caves/ (CaveTextFile.cs),
          Sprites in Assets/Sprites/ (eine Datei pro Objekt, SpriteTextFile.cs), die Demo in
          Assets/demo.txt (DemoTextFile.cs, jeweils BoulderDash.Core/Data/). Sound wird
-         vollständig synthetisiert (BoulderDash.Core/Audio), keine Audiodateien nötig. -->
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
+         vollständig synthetisiert (BoulderDash.Core/Audio), keine Audiodateien nötig.
+
+         Die Version ist FESTGENAGELT (kein 3.8.*): Das kompilierte Shaderformat (.mgfxo, siehe
+         CompileShaders) ist versioniert — Shader-Compiler und Framework müssen dieselbe Version
+         sprechen, sonst wirft Effect beim Laden. Beim Anheben also beides gemeinsam heben: hier
+         und in .config/dotnet-tools.json. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoulderDash.Core\BoulderDash.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+    <ShaderSource Include="Effects\*.fx" />
   </ItemGroup>
+  <!-- Shader werden mit mgfxc übersetzt (dotnet-Tool, siehe .config/dotnet-tools.json) — die einzige
+       Ausnahme von "alle Assets sind Textdateien": Die HLSL-Quelle in Effects/ ist lesbar und liegt im
+       Repo, das binäre .mgfxo entsteht beim Bauen in obj/ und wird von dort ins Ausgabeverzeichnis
+       kopiert. Der Übersetzungsschritt braucht den D3D-Compiler und läuft deshalb nur unter Windows
+       (anderswo bräuchte mgfxc Wine, siehe MGFXC_WINE_PATH). -->
+  <PropertyGroup>
+    <!-- Absolut, weil mgfxc aus dem Projektverzeichnis heraus läuft: IntermediateOutputPath ist relativ. -->
+    <ShaderOutputDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Effects'))</ShaderOutputDir>
+  </PropertyGroup>
+  <Target Name="CompileShaders" BeforeTargets="AssignTargetPaths"
+          Inputs="@(ShaderSource)"
+          Outputs="@(ShaderSource->'$(ShaderOutputDir)\%(Filename).mgfxo')">
+    <MakeDir Directories="$(ShaderOutputDir)" />
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <!-- mgfxc zielt auf eine ältere Runtime als das net10-SDK dieser Maschine. -->
+    <Exec Command="dotnet tool run mgfxc &quot;%(ShaderSource.FullPath)&quot; &quot;$(ShaderOutputDir)\%(ShaderSource.Filename).mgfxo&quot; /Profile:OpenGL"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          EnvironmentVariables="DOTNET_ROLL_FORWARD=Major" />
+  </Target>
+  <!-- Eigenes Target, damit die übersetzten Shader auch dann in den Build kommen, wenn CompileShaders
+       als aktuell übersprungen wurde — AfterTargets feuert auch dann. -->
+  <Target Name="IncludeShaders" AfterTargets="CompileShaders" BeforeTargets="AssignTargetPaths">
+    <ItemGroup>
+      <None Include="@(ShaderSource->'$(ShaderOutputDir)\%(Filename).mgfxo')"
+            TargetPath="Effects\%(Filename).mgfxo"
+            CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
 </Project>

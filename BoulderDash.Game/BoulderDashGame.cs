@@ -40,6 +40,7 @@ public class BoulderDashGame : XnaGame
 
     private SpriteAtlas _spriteAtlas = null!;
     private CaveRenderer _caveRenderer = null!;
+    private HorrorPostProcessor _horror = null!;
     private TitleRenderer _titleRenderer = null!;
     private TestMenuRenderer _testMenuRenderer = null!;
     private BiosFont _font = null!;
@@ -113,6 +114,9 @@ public class BoulderDashGame : XnaGame
         var sprites = new SpriteTextRepository(Path.Combine(assets, "Sprites"));
         _spriteAtlas = new SpriteAtlas(GraphicsDevice, sprites);
         _caveRenderer = new CaveRenderer(_spriteAtlas);
+        _horror = new HorrorPostProcessor(
+            GraphicsDevice,
+            Path.Combine(AppContext.BaseDirectory, "Effects", "HorrorPost.mgfxo"));
         _font = new BiosFont(GraphicsDevice);
         _titleRenderer = new TitleRenderer(GraphicsDevice, Path.Combine(assets, "Screens"), _font);
         _testMenuRenderer = new TestMenuRenderer(_font);
@@ -128,6 +132,12 @@ public class BoulderDashGame : XnaGame
         SyncViewportSteps();
 
         SyncPalette();
+    }
+
+    protected override void UnloadContent()
+    {
+        _horror.Dispose();
+        base.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -349,27 +359,43 @@ public class BoulderDashGame : XnaGame
 
     protected override void Draw(GameTime gameTime)
     {
+        var totalSeconds = gameTime.TotalGameTime.TotalSeconds;
         var (logicalWidth, logicalHeight) = GetLogicalSize();
+
+        if (IsHorrorLit)
+        {
+            DrawHorrorLit(totalSeconds, logicalWidth, logicalHeight);
+        }
+        else
+        {
+            DrawPlain(totalSeconds, logicalWidth, logicalHeight);
+        }
+
+        base.Draw(gameTime);
+    }
+
+    /// <summary>Ob die Höhle im Dunkeln liegt (siehe HorrorPostProcessor). Sie tut es genau dann, wenn
+    /// auch der Cave-Explore läuft (E-Taste): Beides erzählt dieselbe Geschichte — man sieht nur, was
+    /// in Reichweite liegt. Maßgeblich ist der Schalter der Session, nicht die Kopie in _explore.</summary>
+    private bool IsHorrorLit =>
+        _session.Cave is not null
+        && _session.Phase is not (SessionPhase.TitleScreen or SessionPhase.Menu or SessionPhase.TestMenu)
+        && _session.ExploreMap.Enabled;
+
+    /// <summary>Der gewohnte Weg: alles auf ein RenderTarget in logischer Auflösung und das dann
+    /// ganzzahlig ins Fenster.</summary>
+    private void DrawPlain(double totalSeconds, int logicalWidth, int logicalHeight)
+    {
         EnsureRenderTarget(logicalWidth, logicalHeight);
 
         GraphicsDevice.SetRenderTarget(_renderTarget);
         GraphicsDevice.Clear(Color.Black);
-        DrawScene(gameTime.TotalGameTime.TotalSeconds, logicalWidth, logicalHeight);
+        DrawScene(totalSeconds, logicalWidth, logicalHeight);
         GraphicsDevice.SetRenderTarget(null);
 
         GraphicsDevice.Clear(Color.Black);
 
-        // Bildschirm-Zoom: skalieren und im Fenster zentrieren; was übrig bleibt, ist schwarzer Rand.
-        // Erst hier, denn GetScale liest GraphicsDevice.Viewport — solange das RenderTarget gesetzt
-        // ist, ist das dessen eigene Größe und der Maßstab käme immer auf 1.
-        var scale = GetScale(logicalWidth, logicalHeight);
-        var width = (int)(logicalWidth * scale);
-        var height = (int)(logicalHeight * scale);
-        var destination = new Rectangle(
-            (GraphicsDevice.Viewport.Width - width) / 2,
-            (GraphicsDevice.Viewport.Height - height) / 2,
-            width,
-            height);
+        var (destination, scale) = GetDestination(logicalWidth, logicalHeight);
 
         // Hochskaliert wird ganzzahlig, da hält PointClamp die Pixel scharf. Muss dagegen
         // heruntergerechnet werden (großes Sichtfenster auf kleinem Monitor, siehe GetScale), fiele
@@ -378,8 +404,58 @@ public class BoulderDashGame : XnaGame
         _spriteBatch.Begin(samplerState: sampler);
         _spriteBatch.Draw(_renderTarget, destination, Color.White);
         _spriteBatch.End();
+    }
 
-        base.Draw(gameTime);
+    /// <summary>
+    /// Der dunkle Weg (siehe HorrorPostProcessor): Die Kacheln gehen in logischer Auflösung auf ihr
+    /// eigenes Bild, die Statuszeile auf ein zweites, dazu kommen Lichtkarte und Sichtbarkeitsmaske.
+    /// Zusammengezogen wird erst im Fenster — in dessen voller Auflösung, damit Licht, Nebel, Rauch
+    /// und Korn nicht im Kachelraster kleben.
+    ///
+    /// Die Statuszeile kommt danach unberührt darüber: Sie ist Anzeige, nicht Höhle, und hat im
+    /// Dunkeln nichts verloren.
+    /// </summary>
+    private void DrawHorrorLit(double totalSeconds, int logicalWidth, int logicalHeight)
+    {
+        var cave = _session.Cave!;
+
+        _horror.BeginScene(logicalWidth, logicalHeight);
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        _caveRenderer.Draw(_spriteBatch, cave, _session.Camera, _session.State, _session.Input,
+            _session.Clocks, _session.ScreenCover, _session.ExploreMap, fogViaShader: true);
+        _spriteBatch.End();
+
+        _horror.BeginOverlay();
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        DrawCaveText(_spriteBatch, logicalWidth, logicalHeight);
+        _spriteBatch.End();
+
+        _horror.BuildLightMap(_spriteBatch, cave, _session.Camera, _session.State,
+            _session.ScreenCover, _session.ExploreMap, totalSeconds);
+        _horror.UpdateMask(cave, _session.Camera, _session.ExploreMap);
+
+        GraphicsDevice.SetRenderTarget(null);
+        GraphicsDevice.Clear(Color.Black);
+
+        var (destination, scale) = GetDestination(logicalWidth, logicalHeight);
+        _horror.Compose(_spriteBatch, destination, scale, totalSeconds);
+        _horror.DrawOverlay(_spriteBatch, destination, scale);
+    }
+
+    /// <summary>Bildschirm-Zoom: skalieren und im Fenster zentrieren; was übrig bleibt, ist schwarzer
+    /// Rand. Erst aufrufen, wenn kein RenderTarget mehr gebunden ist — GetScale liest
+    /// GraphicsDevice.Viewport, und das wäre sonst die Größe des RenderTargets.</summary>
+    private (Rectangle Destination, float Scale) GetDestination(int logicalWidth, int logicalHeight)
+    {
+        var scale = GetScale(logicalWidth, logicalHeight);
+        var width = (int)(logicalWidth * scale);
+        var height = (int)(logicalHeight * scale);
+
+        return (new Rectangle(
+            (GraphicsDevice.Viewport.Width - width) / 2,
+            (GraphicsDevice.Viewport.Height - height) / 2,
+            width,
+            height), scale);
     }
 
     /// <summary>Logische Auflösung der aktuellen Phase: die Menübildschirme sind BD1-Grafiken in
@@ -425,31 +501,39 @@ public class BoulderDashGame : XnaGame
         else if (_session.Cave is not null)
         {
             _caveRenderer.Draw(_spriteBatch, _session.Cave, _session.Camera, _session.State, _session.Input, _session.Clocks, _session.ScreenCover, _session.ExploreMap);
-
-            // Statuszeile und Meldung sind 320 Pixel breit (40 BIOS-Zeichen) wie im Original und
-            // bleiben deshalb auch bei größerem Sichtfenster mittig statt links zu kleben.
-            var textLeft = (logicalWidth - MenuWidth) / 2;
-
-            // Nach einem Zoomschritt gehört die Zeile für ein paar Sekunden ganz der neuen Stufe:
-            // Die Spielwerte weichen so lange, statt sich mit ihr zu drängeln.
-            if (_zoomMessageSeconds > 0)
-            {
-                var zoomText = BuildZoomLine();
-                var zoomLeft = textLeft + ((MenuWidth - (zoomText.Length * BiosFont.GlyphSize)) / 2);
-                _font.DrawText(_spriteBatch, zoomText, new Vector2(zoomLeft, 0), Color.White);
-            }
-            else
-            {
-                _font.DrawText(_spriteBatch, BuildStatusLine(), new Vector2(textLeft, 0), Color.White);
-            }
-
-            if (_session.ShowGameOverMessage)
-            {
-                _font.DrawText(_spriteBatch, "GAME OVER", new Vector2(textLeft, logicalHeight / 2), Color.White);
-            }
+            DrawCaveText(_spriteBatch, logicalWidth, logicalHeight);
         }
 
         _spriteBatch.End();
+    }
+
+    /// <summary>Was während des Spiels als Schrift über der Höhle steht: die Statuszeile (bzw. für ein
+    /// paar Sekunden die Zoomstufe) und die Game-Over-Meldung. Eigenständig, weil die dunkle
+    /// Beleuchtung sie auf ein eigenes Bild zeichnet und erst NACH dem Compose-Pass darüberlegt —
+    /// Anzeige gehört nicht ins Dunkel (siehe DrawHorrorLit).</summary>
+    private void DrawCaveText(SpriteBatch batch, int logicalWidth, int logicalHeight)
+    {
+        // Statuszeile und Meldung sind 320 Pixel breit (40 BIOS-Zeichen) wie im Original und
+        // bleiben deshalb auch bei größerem Sichtfenster mittig statt links zu kleben.
+        var textLeft = (logicalWidth - MenuWidth) / 2;
+
+        // Nach einem Zoomschritt gehört die Zeile für ein paar Sekunden ganz der neuen Stufe:
+        // Die Spielwerte weichen so lange, statt sich mit ihr zu drängeln.
+        if (_zoomMessageSeconds > 0)
+        {
+            var zoomText = BuildZoomLine();
+            var zoomLeft = textLeft + ((MenuWidth - (zoomText.Length * BiosFont.GlyphSize)) / 2);
+            _font.DrawText(batch, zoomText, new Vector2(zoomLeft, 0), Color.White);
+        }
+        else
+        {
+            _font.DrawText(batch, BuildStatusLine(), new Vector2(textLeft, 0), Color.White);
+        }
+
+        if (_session.ShowGameOverMessage)
+        {
+            _font.DrawText(batch, "GAME OVER", new Vector2(textLeft, logicalHeight / 2), Color.White);
+        }
     }
 
     /// <summary>Send_Message (src/GAME.CPP:34-48): vor dem Erscheinen "PLAYER 1, ..." Kopfzeile,

@@ -43,7 +43,32 @@ public sealed class CaveRenderer
     public static (int Width, int Height) LogicalSize(ViewportSize viewport) =>
         (viewport.Columns * TileSize, StatusLineHeight + (viewport.Rows * TileSize));
 
-    public void Draw(SpriteBatch batch, Cave cave, Camera camera, GameState state, InputState input, Clocks clocks, ScreenCover? cover, ExploreMap? explore = null)
+    /// <summary>Wo das gezeichnete Cave-Fenster auf der Zeichenfläche liegt und wie viele Kacheln es
+    /// wirklich zeigt (siehe <see cref="LayoutFor"/>).</summary>
+    public readonly record struct PlayfieldLayout(int OffsetX, int OffsetY, int Columns, int Rows);
+
+    /// <summary>
+    /// Die Lage des Cave-Fensters auf der Zeichenfläche. Ist das Sichtfenster größer als die Cave
+    /// (z. B. eine 20x12-Intermission bei großem Zoom), steht die Kamera auf 0 (Camera.Clamp) und die
+    /// Cave wird im schwarzen Rest zentriert.
+    ///
+    /// Der Versatz ist NICHT zwangsläufig kachelbündig — bei ungerader Spaltendifferenz bleiben 8
+    /// Pixel. Wer damit rechnet, rechne in Pixeln. <see cref="Draw"/> und die Horror-Beleuchtung
+    /// (HorrorPostProcessor) tun das hier gemeinsam, damit beide dieselbe Geometrie sehen.
+    /// </summary>
+    public static PlayfieldLayout LayoutFor(Cave cave, ViewportSize viewport) => new(
+        Math.Max(0, (viewport.Columns - cave.Width) * TileSize / 2),
+        Math.Max(0, (viewport.Rows - cave.Height) * TileSize / 2),
+        Math.Min(viewport.Columns, cave.Width),
+        Math.Min(viewport.Rows, cave.Height));
+
+    /// <param name="fogViaShader">Der Nebel des Cave-Explore kommt nicht mehr von hier, sondern vom
+    /// Compose-Shader der Horror-Beleuchtung (HorrorPostProcessor): Erkundetes wird dann in NORMALEN
+    /// Farben gezeichnet und Unerkundetes gar nicht erst ausgelassen — Entsättigen und Schwärzen
+    /// besorgt der Shader, und zwar mit weichen Kanten quer über die Kacheln hinweg statt an ihnen
+    /// entlang. Was der Renderer trotzdem selbst tut: die vergessenen Kreaturen ersetzen. Das ist
+    /// keine Optik, sondern die Regel, was das Gedächtnis behält.</param>
+    public void Draw(SpriteBatch batch, Cave cave, Camera camera, GameState state, InputState input, Clocks clocks, ScreenCover? cover, ExploreMap? explore = null, bool fogViaShader = false)
     {
         var viewport = camera.Viewport;
         var context = new RenderContext(clocks.Clk4, state.ExitFlashOn, state.EnchantedWallRunning, input);
@@ -51,13 +76,7 @@ public sealed class CaveRenderer
         // Die Verdeckung läuft im selben Takt wie die Objekte, gehört aber nicht zum Gitter.
         _cover.AnimationPhase = cave.AnimationPhase;
 
-        // Ist das Sichtfenster größer als die Cave (z. B. eine 20x12-Intermission bei großem Zoom),
-        // steht die Kamera auf 0 (Camera.Clamp) und die Cave wird im schwarzen Rest zentriert.
-        var offsetX = Math.Max(0, (viewport.Columns - cave.Width) * TileSize / 2);
-        var offsetY = Math.Max(0, (viewport.Rows - cave.Height) * TileSize / 2);
-
-        var rows = Math.Min(viewport.Rows, cave.Height);
-        var columns = Math.Min(viewport.Columns, cave.Width);
+        var (offsetX, offsetY, columns, rows) = LayoutFor(cave, viewport);
 
         for (var row = 0; row < rows; row++)
         {
@@ -99,21 +118,23 @@ public sealed class CaveRenderer
                 // RenderTarget ist schwarz gelöscht (BoulderDashGame.Draw), es braucht kein schwarzes
                 // Sprite. Erkundetes außerhalb des Blickradius kommt im Nebelgrau.
                 var visibility = explore?.Visibility(x, y) ?? TileVisibility.Visible;
-                if (visibility == TileVisibility.Hidden)
+                if (visibility == TileVisibility.Hidden && !fogViaShader)
                 {
                     continue;
                 }
 
-                var fogged = visibility == TileVisibility.Explored;
+                var explored = visibility == TileVisibility.Explored;
 
                 // Der Nebel zeigt nur die erinnerte Umgebung. Wer aus eigenem Antrieb umherzieht, ist
-                // dort nicht zu sehen — an seiner Stelle steht der Leerraum, über den er zieht.
-                if (fogged && !tile.VisibleInFog)
+                // dort nicht zu sehen — an seiner Stelle steht der Leerraum, über den er zieht. Das
+                // gilt auch für Unerkundetes: Beim Shader-Nebel wird es zwar gezeichnet, aber seine
+                // weiche Kante darf keine Kreatur aus dem Schwarzen durchscheinen lassen.
+                if (visibility != TileVisibility.Visible && !tile.VisibleInFog)
                 {
                     tile = _forgotten;
                 }
 
-                _atlas.Draw(batch, destination, tile.Appearance(context), fogged);
+                _atlas.Draw(batch, destination, tile.Appearance(context), fogged: explored && !fogViaShader);
             }
         }
     }
